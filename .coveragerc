@@ -1,0 +1,3 @@
+[run]
+source = subion_api
+omit = subion_api/test*
