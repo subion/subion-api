@@ -1,5 +1,6 @@
 """Common regular expression."""
 import re
+
 # 3 ~ 16 digit, include alphanumeric.
 RE_USERNAME = r'^[a-zA-Z0-9-_]{3,16}$'
 # 6 ~ 20 digit.
