@@ -1,5 +1,6 @@
 """Resource Token."""
 from pyramid.view import view_config, view_defaults
+from venusian import lift
 
 from subion_api.ext import jwt
 from subion_api.services import UserService
@@ -8,6 +9,7 @@ from subion_api.views.base import Res
 
 
 @view_defaults(route_name='token', renderer='json')
+@lift()
 class Token(Res):
     """Resource Token."""
 
