@@ -2,7 +2,11 @@
 from functools import wraps
 
 from jsonschema import Draft4Validator, FormatChecker
+from jwt import InvalidTokenError
+from pyramid.httpexceptions import HTTPForbidden, HTTPUnauthorized
 
+from subion_api.ext import jwt
+from subion_api.models import User
 from subion_api.validator.regex import _DOMAIN_REGEX, _USER_REGEX
 
 
@@ -38,10 +42,10 @@ def validate(schema):
             if self.request.method == 'GET':
                 data = dict(self.request.params)
                 validator.validate(data)
-                self.data = data
             else:
-                validator.validate(self.request.json)
-                self.data = self.request.json
+                data = self.request.json
+                validator.validate(data)
+            self.data: dict = data
             return fn(self, *args, **kwargs)
 
         return decorator
@@ -54,5 +58,17 @@ def login_required(fn):
 
     @wraps(fn)
     def decorator(self, *args, **kwargs):
-        # TODO
-        pass
+        if not self.request.authorization:
+            raise HTTPUnauthorized()
+        scheme, token = self.request.authorization
+        if scheme != 'JWT':
+            raise HTTPUnauthorized()
+        try:
+            data = jwt.decode(token)
+        except InvalidTokenError as e:
+            raise HTTPForbidden()
+        else:
+            self.user: User = User.objects(id=data['id']).get()
+            return fn(self, *args, **kwargs)
+
+    return decorator

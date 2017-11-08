@@ -49,7 +49,7 @@ class JWT:
         data['exp'] += exp
         return jwt.encode(data, self._key, algorithm='RS256').decode('utf-8')
 
-    def decode(self, token: str, silent: bool = True) -> Dict[str, Any]:
+    def decode(self, token: str, silent: bool = False) -> Dict[str, Any]:
         """Decode `token` to data."""
         try:
             data = cast(Dict[str, Any],

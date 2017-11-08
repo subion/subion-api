@@ -1,4 +1,4 @@
-"""Define DRM."""
+"""Define ODM."""
 from mongoengine import connect
 from subion_api.models.user import User
 

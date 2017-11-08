@@ -3,7 +3,21 @@ from datetime import datetime
 from typing import Any, Dict
 
 import bcrypt
-from mongoengine import BinaryField, DateTimeField, Document
+from mongoengine import BinaryField, DateTimeField, Document, QuerySet
+
+
+class ActiveSet(QuerySet):
+    """Add filter for finding active or deleted documents."""
+
+    @property
+    def active(self):
+        """Return active documents."""
+        return self.filter(deleted_at__exists=False)
+
+    @property
+    def deleted(self):
+        """Return deleted documents."""
+        return self.filter(deleted_at__exists=True)
 
 
 class BaseDocument(Document):
@@ -13,7 +27,7 @@ class BaseDocument(Document):
     deleted_at = DateTimeField(null=True)
     updated_at = DateTimeField(null=True)
 
-    meta: Dict[Any, Any] = {'abstract': True}
+    meta: Dict[Any, Any] = {'abstract': True, 'queryset_class': ActiveSet}
 
     def to_dict(self):
         """Return model to a python dict."""

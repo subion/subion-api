@@ -4,4 +4,5 @@
 def includeme(config):
     """Include in config."""
     config.add_route('token', '/token')
-    config.add_route('user', '/users')
+    config.add_route('users', '/users')
+    config.add_route('user', '/user')
