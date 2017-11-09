@@ -20,4 +20,5 @@ class User(BaseDocument, PasswordMixin):
             'username': self.username,
             'email': self.email,
             'created_at': self.created_at.timestamp(),
+            'updated_at': self.updated_at.timestamp(),
         }

@@ -3,7 +3,19 @@ from datetime import datetime
 from typing import Any, Dict
 
 import bcrypt
-from mongoengine import BinaryField, DateTimeField, Document, QuerySet
+from mongoengine import BinaryField, DateTimeField, Document, QuerySet, signals
+
+
+class Signal:
+    """Mongoengine's signals."""
+
+    @staticmethod
+    def update_updated_at(sender, document):
+        """Update updated_at."""
+        document.updated_at = datetime.utcnow()
+
+
+signals.pre_save.connect(Signal.update_updated_at)
 
 
 class ActiveSet(QuerySet):
