@@ -40,3 +40,23 @@ CREATE_USER = {
     'additionalProperties': False,
     'required': ['username', 'password', 'email']
 }
+
+MODIFY_USER = {
+    'type': 'object',
+    'properties': {
+        'username': {
+            'type': 'string',
+            'pattern': RE_USERNAME
+        },
+        'email': {
+            'type': 'string',
+            'format': 'mongo_email'
+        },
+        'password': {
+            'type': 'string',
+            'pattern': RE_PASSWORD
+        }
+    },
+    "additionalProperties": False,
+    "minProperties": 1
+}

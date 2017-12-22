@@ -1,5 +1,6 @@
 """Define common exception response."""
 from pyramid.httpexceptions import HTTPError, exception_response
+from mongoengine.errors import NotUniqueError, DoesNotExist
 
 
 class ExceptionResponse(HTTPError):
@@ -17,3 +18,11 @@ class ExceptionResponse(HTTPError):
     def __init__(self, status_code: int = 422, body: dict = None) -> None:
         """Never used. Lint for init."""
         pass
+
+
+class Missing(DoesNotExist):
+    pass
+
+
+class AlreadyExist(NotUniqueError):
+    pass

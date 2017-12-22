@@ -29,3 +29,13 @@ class UserService:
         if not user.check_password(data['password']):
             raise HTTPUnauthorized()
         return user
+
+    @classmethod
+    def find_user_from_email(cls, email: str) -> User:
+        """Find user from username or email."""
+        return User.objects(email=email).get_or_none()
+
+    @classmethod
+    def find_user_from_username(cls, username: str) -> User:
+        """Find user from username or email."""
+        return User.objects(username=username).get_or_none()

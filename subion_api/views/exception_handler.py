@@ -2,13 +2,13 @@
 from json import JSONDecodeError
 
 from jsonschema.exceptions import ValidationError
-from mongoengine.errors import DoesNotExist, NotUniqueError
 from pyramid.exceptions import PredicateMismatch
 from pyramid.httpexceptions import HTTPError
 from pyramid.request import Request
 from pyramid.view import exception_view_config
 
 from subion_api.utils import ExceptionResponse
+from subion_api.utils.exception import Missing, AlreadyExist
 
 
 @exception_view_config(HTTPError)
@@ -41,8 +41,8 @@ def validation_error(exc: ValidationError, request: Request):
     })
 
 
-@exception_view_config(NotUniqueError)
-def already_exists(exc: NotUniqueError, request: Request):
+@exception_view_config(AlreadyExist)
+def already_exists(exc: AlreadyExist, request: Request):
     """Rsource already exists."""
     return ExceptionResponse(body={
         'message': 'Validation Failed',
@@ -53,8 +53,8 @@ def already_exists(exc: NotUniqueError, request: Request):
     })
 
 
-@exception_view_config(DoesNotExist)
-def does_not_exist(exc: DoesNotExist, request: Request):
+@exception_view_config(Missing)
+def does_not_exist(exc: Missing, request: Request):
     """Rsource does not exists."""
     return ExceptionResponse(body={
         'message': 'Validation Failed',

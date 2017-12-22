@@ -4,6 +4,7 @@ from typing import Any, Dict
 
 import bcrypt
 from mongoengine import BinaryField, DateTimeField, Document, QuerySet, signals
+from mongoengine.errors import MultipleObjectsReturned
 
 
 class Signal:
@@ -30,6 +31,15 @@ class ActiveSet(QuerySet):
     def deleted(self):
         """Return deleted documents."""
         return self.filter(deleted_at__exists=True)
+
+    def get_or_none(self):
+        count = self.count()
+        if count == 1:
+            return self.get()
+        elif count == 0:
+            return None
+        else:
+            raise MultipleObjectsReturned()
 
 
 class BaseDocument(Document):

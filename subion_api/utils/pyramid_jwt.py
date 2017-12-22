@@ -6,6 +6,7 @@ from typing import Any, Dict, cast
 import jwt
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
+from pyramid.decorator import reify
 
 from subion_api import settings
 
@@ -19,7 +20,7 @@ class JWT:
         self.aud = settings.AUDIENCE
         self.key_path = settings.KEY_DIR
 
-    @property
+    @reify
     def _key(self):
         """Return a private encrypted RSA key."""
         with open(os.path.join(self.key_path, 'password.pem'), 'rb') as f:
