@@ -1,34 +1,14 @@
 """Useful decorator."""
 from functools import wraps
 
-from jsonschema import Draft4Validator, FormatChecker
+from jsonschema import Draft4Validator
 from jwt import InvalidTokenError
 from pyramid.httpexceptions import HTTPForbidden, HTTPUnauthorized
+from subion_api.utils.exception import Missing
 
 from subion_api.ext import jwt
 from subion_api.models import User
-from subion_api.validator.regex import _DOMAIN_REGEX, _USER_REGEX
-
-
-@FormatChecker.cls_checks('mongo_email')
-def mongo_email_check(value: str) -> bool:
-    """Use the same way as mongoengine to validate email."""
-    if '@' not in value:
-        return False
-
-    user_part, domain_part = value.rsplit('@', 1)
-    if not _USER_REGEX.match(user_part):
-        return False
-    if not _DOMAIN_REGEX.match(domain_part):
-        return False
-    try:
-        domain_part = domain_part.encode('idna').decode('ascii')
-    except UnicodeError:
-        return False
-    else:
-        if not _DOMAIN_REGEX.match(domain_part):
-            return False
-    return True
+from subion_api.validators import subion_checker
 
 
 def validate(schema):
@@ -38,7 +18,7 @@ def validate(schema):
 
         @wraps(fn)
         def decorator(self, *args, **kwargs):
-            validator = Draft4Validator(schema, format_checker=FormatChecker())
+            validator = Draft4Validator(schema, format_checker=subion_checker)
             if self.request.method == 'GET':
                 data = dict(self.request.params)
                 validator.validate(data)
@@ -54,7 +34,7 @@ def validate(schema):
 
 
 def login_required(fn):
-    """Validate user log in or not."""
+    """Ensure user has logged in."""
 
     @wraps(fn)
     def decorator(self, *args, **kwargs):
@@ -68,7 +48,10 @@ def login_required(fn):
         except InvalidTokenError as e:
             raise HTTPForbidden()
         else:
-            self.user: User = User.objects(id=data['id']).get()
+            user = User.objects(id=data['id']).get_or_none()
+            if not user:
+                raise Missing()
+            self.request.current_user = user
             return fn(self, *args, **kwargs)
 
     return decorator

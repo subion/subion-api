@@ -1,6 +1,5 @@
 """Define common exception response."""
 from pyramid.httpexceptions import HTTPError, exception_response
-from mongoengine.errors import NotUniqueError, DoesNotExist
 
 
 class ExceptionResponse(HTTPError):
@@ -20,9 +19,13 @@ class ExceptionResponse(HTTPError):
         pass
 
 
-class Missing(DoesNotExist):
+class Missing(Exception):
+    """Object does not exists."""
+
     pass
 
 
-class AlreadyExist(NotUniqueError):
+class AlreadyExist(Exception):
+    """Object exists."""
+
     pass

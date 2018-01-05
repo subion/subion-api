@@ -8,7 +8,7 @@ from pyramid.request import Request
 from pyramid.view import exception_view_config
 
 from subion_api.utils import ExceptionResponse
-from subion_api.utils.exception import Missing, AlreadyExist
+from subion_api.utils.exception import AlreadyExist, Missing
 
 
 @exception_view_config(HTTPError)
@@ -32,34 +32,38 @@ def parse_body_error(exc: JSONDecodeError, request: Request):
 @exception_view_config(ValidationError)
 def validation_error(exc: ValidationError, request: Request):
     """Input not validated."""
-    return ExceptionResponse(body={
-        'message': exc.message,
-        'error': {
-            'resource': request.matched_route.name,
-            'code': 'invalid'
-        },
-    })
+    return ExceptionResponse(
+        body={
+            'message': exc.message,
+            'error': {
+                'resource': request.matched_route.name,
+                'field': exc.path[0] if len(exc.path) > 0 else '',
+                'code': 'invalid'
+            },
+        })
 
 
 @exception_view_config(AlreadyExist)
 def already_exists(exc: AlreadyExist, request: Request):
     """Rsource already exists."""
-    return ExceptionResponse(body={
-        'message': 'Validation Failed',
-        'error': {
-            'resource': request.matched_route.name,
-            'code': 'already_exists'
-        },
-    })
+    return ExceptionResponse(
+        body={
+            'message': 'Validation Failed',
+            'error': {
+                'resource': request.matched_route.name,
+                'code': 'already_exists'
+            },
+        })
 
 
 @exception_view_config(Missing)
 def does_not_exist(exc: Missing, request: Request):
     """Rsource does not exists."""
-    return ExceptionResponse(body={
-        'message': 'Validation Failed',
-        'error': {
-            'resource': request.matched_route.name,
-            'code': 'missing'
-        },
-    })
+    return ExceptionResponse(
+        body={
+            'message': 'Validation Failed',
+            'error': {
+                'resource': request.matched_route.name,
+                'code': 'missing'
+            },
+        })

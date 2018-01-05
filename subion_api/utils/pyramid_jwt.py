@@ -12,7 +12,14 @@ from subion_api import settings
 
 
 class JWT:
-    """Utility class for encoding and decoding Json Web Token."""
+    """Utility class for encoding and decoding Json Web Token.
+
+    >>> jwt = JWT()
+    >>> token = jwt.encode({'id': 1})
+    >>> data = jwt.decode(token)
+    >>> data
+    {'id': 1}
+    """
 
     def __init__(self):
         """Initialize JWT:iss & JWT:aud from settings.py."""
@@ -21,7 +28,7 @@ class JWT:
         self.key_path = settings.KEY_DIR
 
     @reify
-    def _key(self):
+    def _private_key(self):
         """Return a private encrypted RSA key."""
         with open(os.path.join(self.key_path, 'password.pem'), 'rb') as f:
             password = f.read().strip()
@@ -29,6 +36,13 @@ class JWT:
         with open(os.path.join(self.key_path, 'private.pem'), 'rb') as f:
             return serialization.load_pem_private_key(
                 f.read(), password=password, backend=default_backend())
+
+    @reify
+    def _public_key(self):
+        """Return a public encrypted RSA key."""
+        with open(os.path.join(self.key_path, 'public.pem'), 'rb') as f:
+            return serialization.load_pem_public_key(
+                f.read(), backend=default_backend())
 
     @property
     def _claim(self):
@@ -48,7 +62,8 @@ class JWT:
         for k, v in self._claim.items():
             data.setdefault(k, v)
         data['exp'] += exp
-        return jwt.encode(data, self._key, algorithm='RS256').decode('utf-8')
+        return jwt.encode(
+            data, self._private_key, algorithm='RS256').decode('utf-8')
 
     def decode(self, token: str, silent: bool = False) -> Dict[str, Any]:
         """Decode `token` to data."""
@@ -58,7 +73,7 @@ class JWT:
                             token,
                             issuer=self.iss,
                             audience=self.aud,
-                            key=self._key.public_key()))
+                            key=self._public_key))
             for k in self._claim:
                 data.pop(k)
         except jwt.InvalidTokenError as e:
@@ -67,3 +82,8 @@ class JWT:
             else:
                 raise e
         return data
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

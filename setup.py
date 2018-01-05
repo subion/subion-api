@@ -30,6 +30,7 @@ developments_require = [
     'pytest-cov',
     'pyramid_ipython',
     'mypy',
+    'mypy-extensions',
     'flake8',
     'yapf',
     'pep8-naming',

@@ -2,7 +2,7 @@
 from mongoengine import EmailField, StringField
 
 from subion_api.models.base import BaseDocument, PasswordMixin
-from subion_api.validator import RE_USERNAME
+from subion_api.validators.regex import RE_USERNAME
 
 
 class User(BaseDocument, PasswordMixin):

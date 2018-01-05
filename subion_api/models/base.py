@@ -19,7 +19,7 @@ class Signal:
 signals.pre_save.connect(Signal.update_updated_at)
 
 
-class ActiveSet(QuerySet):
+class BaseSet(QuerySet):
     """Add filter for finding active or deleted documents."""
 
     @property
@@ -33,9 +33,10 @@ class ActiveSet(QuerySet):
         return self.filter(deleted_at__exists=True)
 
     def get_or_none(self):
-        count = self.count()
+        """Return instance or None."""
+        count = len(self)
         if count == 1:
-            return self.get()
+            return self[0]
         elif count == 0:
             return None
         else:
@@ -49,7 +50,7 @@ class BaseDocument(Document):
     deleted_at = DateTimeField(null=True)
     updated_at = DateTimeField(null=True)
 
-    meta: Dict[Any, Any] = {'abstract': True, 'queryset_class': ActiveSet}
+    meta: Dict[Any, Any] = {'abstract': True, 'queryset_class': BaseSet}
 
     def to_dict(self):
         """Return model to a python dict."""

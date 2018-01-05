@@ -2,7 +2,7 @@
 from pyramid.request import Request
 
 
-class Res:
+class Resource:
     """Basic Resource."""
 
     def __init__(self, request: Request) -> None:
