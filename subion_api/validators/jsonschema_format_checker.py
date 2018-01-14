@@ -1,13 +1,16 @@
 """The custom jsonschema format checker."""
 import re
+
 from jsonschema import FormatChecker
-from subion_api.validators.regex import (_DOMAIN_REGEX, _USER_REGEX,
-                                         RE_PASSWORD, RE_USERNAME)
+
+from subion_api.validators.regex import (_DOMAIN_REGEX, _URL_REGEX,
+                                         _URL_SCHEMES, _USER_REGEX, RE_PASSWORD,
+                                         RE_USERNAME)
 
 subion_checker = FormatChecker()
 
-USERNAME_REGEX = re.compile(RE_USERNAME)
-PASSWORD_REGEX = re.compile(RE_PASSWORD)
+_USERNAME_REGEX = re.compile(RE_USERNAME)
+_PASSWORD_REGEX = re.compile(RE_PASSWORD)
 
 
 @subion_checker.checks('email')
@@ -34,7 +37,7 @@ def email_check(value: str) -> bool:
 @subion_checker.checks('password')
 def password_check(value: str) -> bool:
     """Password format checker."""
-    if not PASSWORD_REGEX.match(value):
+    if not _PASSWORD_REGEX.match(value):
         return False
     else:
         return True
@@ -43,7 +46,20 @@ def password_check(value: str) -> bool:
 @subion_checker.checks('username')
 def username_check(value: str) -> bool:
     """Username format checker."""
-    if not USERNAME_REGEX.match(value):
+    if not _USERNAME_REGEX.match(value):
         return False
     else:
         return True
+
+
+@subion_checker.checks('url')
+def url_check(value: str) -> bool:
+    """Url format checker."""
+    scheme = value.split('://')[0].lower()
+    if scheme not in _URL_SCHEMES:
+        return False
+
+    if not _URL_REGEX.match(value):
+        return False
+
+    return True

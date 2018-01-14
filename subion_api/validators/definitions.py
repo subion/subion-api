@@ -17,9 +17,30 @@ EMAIL = {
     'type': 'string',
     'format': 'email',
 }
-CREDENTIAL = {
-    'oneOf': [
-        EMAIL,
-        USERNAME,
-    ]
+
+PRODUCT_NAME = {
+    'type': 'string',
+    'minLength': 1,
+    'maxLength': 256,
+}
+
+URL = {
+    'type': 'string',
+    'format': 'url',
+}
+
+EMPTY_STRING = {
+    'type': 'string',
+    'minLength': 0,
+    'maxLength': 0,
+}
+
+COST = {
+    'type': 'integer',
+    'minimum': 0,
+}
+
+EXPIRATION = {
+    'type': 'integer',
+    'minimum': 0,
 }

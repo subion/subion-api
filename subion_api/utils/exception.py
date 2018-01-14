@@ -1,8 +1,8 @@
 """Define common exception response."""
-from pyramid.httpexceptions import HTTPError, exception_response
+from pyramid.httpexceptions import exception_response
 
 
-class ExceptionResponse(HTTPError):
+class ExceptionResponse:
     """Return jsonify exception response."""
 
     def __new__(cls, status_code: int = 422, body: dict = None):
@@ -22,10 +22,6 @@ class ExceptionResponse(HTTPError):
 class Missing(Exception):
     """Object does not exists."""
 
-    pass
-
 
 class AlreadyExist(Exception):
     """Object exists."""
-
-    pass

@@ -50,6 +50,7 @@ def login_required(fn):
         else:
             user = User.objects(id=data['id']).get_or_none()
             if not user:
+                self.request.current_user = None
                 raise Missing()
             self.request.current_user = user
             return fn(self, *args, **kwargs)
